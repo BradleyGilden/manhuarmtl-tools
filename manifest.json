@@ -1,0 +1,14 @@
+{
+  "name": "Manhuarmtl Tools",
+  "description": "Useful tools for manhuarmtl site",
+  "version": "1.0",
+  "content_scripts": [{
+    "matches": ["https://manhuarmtl.com/manga/*"],
+    "js": ["content.js"]
+  }],
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "logo.png"
+  }
+}
