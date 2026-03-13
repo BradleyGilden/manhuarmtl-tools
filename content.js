@@ -1,9 +1,23 @@
+const styleLink = document.createElement('link');
+styleLink.rel = 'stylesheet';
+styleLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/7.4.47/css/materialdesignicons.min.css';
+
 const host = document.createElement('div');
 document.body.appendChild(host);
 
 const shadow = host.attachShadow({ mode: 'open' });
 
-console.log(location.pathname)
+shadow.appendChild(styleLink);
+
+const chapter_str =  location.pathname.match(/chapter-(\d+)/)?.[1]
+
+const chapter = chapter_str ? parseInt(chapter_str) : location.pathname
+
+const prevURL = location.href.replace(/chapter-\d+/, `chapter-${chapter - 1}`)
+const nextURL = location.href.replace(/chapter-\d+/, `chapter-${chapter + 1}`)
+
+
+const SS_SPACING_END = '200px'
 
 shadow.innerHTML = `
   <style>
@@ -11,7 +25,7 @@ shadow.innerHTML = `
       align-items: center;
       background-color: #9e42f5;
       border-radius: 60px;
-      border: 1px solid #ddd;
+      border: none;
       color: white;
       display: inline-flex;
       height: 32px;
@@ -29,12 +43,12 @@ shadow.innerHTML = `
       margin: 0px 8px;
     }
 
-    .mtmle-button:hover {
+    .mtmle-button {
       max-width: 300px;
     }
 
     .mtmle-button.prev {
-      left: 60px;
+      left: ${SS_SPACING_END};
     }
 
     .mtmle-button.prev .content {
@@ -43,12 +57,30 @@ shadow.innerHTML = `
 
     .mtmle-button.next {
       justify-content: flex-end;
-      right: 60px;
+      right: ${SS_SPACING_END};
     }
 
     .mtmle-button.next .content {
       padding-left: 15px;
     }
   </style>
-  <div>Hello from shadow DOM</div>
+  <a href="${nextURL}" class="mtmle-button next">
+    <div class='content'>
+      Next
+      <i class="mdi mdi-arrow-right"></i>
+    </div>
+  </a>
+  <a href="${prevURL}" class="mtmle-button prev">
+    <div class='content'>
+      <i class="mdi mdi-arrow-left"></i>
+      Previous
+    </div>
+  </a>
 `;
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.value) {
+    const nav_buttons = shadow.querySelectorAll('.mtmle-button')
+    nav_buttons.forEach(btn => btn.style.display = msg.value)
+  }
+});
